@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 
 public class MealsUtil {
     public static void main(String[] args) {
-        List<Meal> meals = AppConfig.getInstance().getInitMeals();
+        List<Meal> meals = AppConfig.getInstance().getMealDao().getAll();
 
         List<MealTo> mealsTo = filteredByStreams(meals, LocalTime.of(7, 0), LocalTime.of(12, 0), AppConfig.CALORIES_PER_DAY);
         mealsTo.forEach(System.out::println);
@@ -37,6 +37,6 @@ public class MealsUtil {
     }
 
     private static MealTo createTo(Meal meal, boolean excess) {
-        return new MealTo(meal.getDateTime(), meal.getDescription(), meal.getCalories(), excess);
+        return new MealTo(meal.getId(), meal.getDateTime(), meal.getDescription(), meal.getCalories(), excess);
     }
 }
