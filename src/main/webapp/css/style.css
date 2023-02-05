@@ -1,0 +1,23 @@
+body {
+    margin-left: 24px;
+}
+
+table {
+    margin: 8px 0px 8px 0px;
+    border-collapse: separate;
+    border-spacing: 0px;
+}
+
+tr[data-meal-excess="false"] {
+    color: green;
+}
+
+tr[data-meal-excess="true"] {
+    color: red;
+}
+
+td, th {
+    padding: 8px;
+    vertical-align: top;
+    border-top: 1px solid #dee2e6 ;
+}

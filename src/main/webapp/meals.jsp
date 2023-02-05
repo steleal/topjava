@@ -12,12 +12,16 @@
 <h2>Meals</h2>
 <table>
     <tr>
-        <th>Meal</th>
+        <th>Дата/Время</th>
+        <th>Описание</th>
+        <th>Калории</th>
     </tr>
     <c:forEach items="${mealsTo}" var="mealTo">
         <jsp:useBean id="mealTo" type="ru.javawebinar.topjava.model.MealTo"/>
-        <tr>
-            <td>${mealTo.toString()}</td>
+        <tr data-meal-excess = ${mealTo.excess}>
+            <td>${mealTo.dateTime}</td>
+            <td>${mealTo.description}</td>
+            <td>${mealTo.calories}</td>
         </tr>
     </c:forEach>
 </table>
