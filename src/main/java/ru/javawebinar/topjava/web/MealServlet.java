@@ -34,6 +34,7 @@ public class MealServlet extends HttpServlet {
         List<Meal> meals = appConfig.getInitMeals();
         List<MealTo> mealsTo = MealsUtil.toMealsTo(meals, CALORIES_PER_DAY);
         request.setAttribute("mealsTo", mealsTo);
+        request.setAttribute("dtFormatter", appConfig.getDateTimeFormatter());
         request.getRequestDispatcher("/meals.jsp").forward(request, response);
     }
 }
