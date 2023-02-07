@@ -16,7 +16,4 @@ public interface CrudDao<T extends Identifiable> {
 
     List<T> getAll();
 
-    void clear();
-
-    int size();
 }

@@ -54,18 +54,6 @@ public class MemoryCrudDao<T extends Identifiable> implements CrudDao<T>, Sequen
     }
 
     @Override
-    public void clear() {
-        log.debug("clear");
-        storage.clear();
-    }
-
-    @Override
-    public int size() {
-        log.debug("size");
-        return storage.size();
-    }
-
-    @Override
     public synchronized int nextId() {
         log.debug("nextId");
         int id = idSequence.addAndGet(1);
