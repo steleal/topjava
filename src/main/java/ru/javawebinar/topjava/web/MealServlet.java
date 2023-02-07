@@ -99,11 +99,11 @@ public class MealServlet extends HttpServlet {
         log.debug("doPost params: id {}, dateTime {}, description {}, calories {}",
                 strId, strDateTime, description, strCalories);
 
-        Integer id = strId == null || strId.isEmpty() ? null : Integer.parseInt(strId);
+        int id = strId == null || strId.isEmpty() ? 0 : Integer.parseInt(strId);
         LocalDateTime dateTime = LocalDateTime.parse(strDateTime);
         int calories = Integer.parseInt(strCalories);
 
-        final boolean isCreate = id == null;
+        final boolean isCreate = id == 0;
         if (isCreate) {
             id = sequence.nextId();
         }

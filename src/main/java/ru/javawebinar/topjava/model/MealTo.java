@@ -2,10 +2,10 @@ package ru.javawebinar.topjava.model;
 
 import java.time.LocalDateTime;
 
-public class MealTo implements Identifiable {
-    public static final MealTo EMPTY = new MealTo(null, null, null, 0, false);
+public class MealTo {
+    public static final MealTo EMPTY = new MealTo(0, null, null, 0, false);
 
-    private final Integer id;
+    private final int id;
 
     private final LocalDateTime dateTime;
 
@@ -23,8 +23,7 @@ public class MealTo implements Identifiable {
         this.excess = excess;
     }
 
-    @Override
-    public Integer getId() {
+    public int getId() {
         return id;
     }
 
