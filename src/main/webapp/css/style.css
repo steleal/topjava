@@ -19,5 +19,15 @@ tr[data-meal-excess="true"] {
 td, th {
     padding: 8px;
     vertical-align: top;
-    border-top: 1px solid #dee2e6 ;
+    border: 1px solid #dee2e6 ;
+}
+
+div {
+    text-align: left;
+    margin: 12px;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
 }

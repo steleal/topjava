@@ -3,6 +3,8 @@ package ru.javawebinar.topjava.model;
 import java.time.LocalDateTime;
 
 public class MealTo implements Identifiable {
+    public static final MealTo EMPTY = new MealTo(null, null, null, 0, false);
+
     private final Integer id;
 
     private final LocalDateTime dateTime;

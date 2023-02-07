@@ -19,7 +19,7 @@ public class MemoryCrudDao<T extends Identifiable> implements CrudDao<T>, Sequen
 
     @Override
     public void add(T item) {
-        log.info("add");
+        log.debug("Save {}", item);
         if (storage.containsKey(item.getId())) {
             throw new RuntimeException("Add error, the key exists " + item.getId());
         }
@@ -28,13 +28,13 @@ public class MemoryCrudDao<T extends Identifiable> implements CrudDao<T>, Sequen
 
     @Override
     public T getById(Integer id) {
-        log.info("getById");
+        log.debug("getById with id {}", id);
         return storage.get(id);
     }
 
     @Override
     public void update(T item) {
-        log.info("update");
+        log.debug("Update {}", item);
         if (!storage.containsKey(item.getId())) {
             throw new RuntimeException("Update error, the key don't exists " + item.getId());
         }
@@ -43,35 +43,36 @@ public class MemoryCrudDao<T extends Identifiable> implements CrudDao<T>, Sequen
 
     @Override
     public void delete(Integer id) {
-        log.info("delete");
+        log.debug("Delete {}", id);
         storage.remove(id);
     }
 
     @Override
     public List<T> getAll() {
-        log.info("getAll");
+        log.debug("getAll");
         return new ArrayList<>(storage.values());
     }
 
     @Override
     public void clear() {
-        log.info("clear");
+        log.debug("clear");
         storage.clear();
     }
 
     @Override
     public int size() {
-        log.info("size");
+        log.debug("size");
         return storage.size();
     }
 
     @Override
     public synchronized int nextId() {
-        log.info("next");
+        log.debug("nextId");
         int id = idSequence.addAndGet(1);
         while (storage.containsKey(id)) {
             id = idSequence.addAndGet(1);
         }
+        log.debug("Return nextId {}", id);
         return id;
     }
 }
