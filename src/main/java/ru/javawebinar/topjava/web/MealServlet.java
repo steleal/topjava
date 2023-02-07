@@ -1,8 +1,8 @@
 package ru.javawebinar.topjava.web;
 
 import org.slf4j.Logger;
-import ru.javawebinar.topjava.config.AppConfig;
 import ru.javawebinar.topjava.dao.CrudDao;
+import ru.javawebinar.topjava.dao.MemoryCrudDao;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.model.MealTo;
 import ru.javawebinar.topjava.util.MealsUtil;
@@ -19,19 +19,19 @@ import java.util.Comparator;
 import java.util.List;
 
 import static org.slf4j.LoggerFactory.getLogger;
-import static ru.javawebinar.topjava.config.AppConfig.CALORIES_PER_DAY;
 
 public class MealServlet extends HttpServlet {
+    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+    private static final int CALORIES_PER_DAY = 2000;
     private static final Logger log = getLogger(MealServlet.class);
+
     private CrudDao<Meal> mealDao;
-    private DateTimeFormatter dateTimeFormatter;
 
     @Override
     public void init(ServletConfig servletConfig) throws ServletException {
         super.init(servletConfig);
-        AppConfig appConfig = AppConfig.getInstance();
-        mealDao = appConfig.getMealDao();
-        dateTimeFormatter = appConfig.getDateTimeFormatter();
+        mealDao = new MemoryCrudDao();
+        MealsUtil.getStartedMealList().forEach(mealDao::add);
     }
 
     @Override
@@ -44,11 +44,11 @@ public class MealServlet extends HttpServlet {
         String action = request.getParameter("action");
         log.debug("doGet params: id = {}, action= {}", strId, action);
 
-        request.setAttribute("dtFormatter", dateTimeFormatter);
+        request.setAttribute("dtFormatter", DATE_TIME_FORMATTER);
         if (action == null) {
             log.debug("list All");
             request.setAttribute("mealsTo", getMealsTo());
-            request.setAttribute("dtFormatter", dateTimeFormatter);
+            request.setAttribute("dtFormatter", DATE_TIME_FORMATTER);
             request.getRequestDispatcher("/meals.jsp").forward(request, response);
             return;
         }
@@ -85,7 +85,7 @@ public class MealServlet extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         log.debug("doPost");
         request.setCharacterEncoding("UTF-8");
 
