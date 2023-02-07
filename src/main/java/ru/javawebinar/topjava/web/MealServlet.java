@@ -3,7 +3,6 @@ package ru.javawebinar.topjava.web;
 import org.slf4j.Logger;
 import ru.javawebinar.topjava.config.AppConfig;
 import ru.javawebinar.topjava.dao.CrudDao;
-import ru.javawebinar.topjava.dao.Sequence;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.model.MealTo;
 import ru.javawebinar.topjava.util.MealsUtil;
@@ -25,7 +24,6 @@ import static ru.javawebinar.topjava.config.AppConfig.CALORIES_PER_DAY;
 public class MealServlet extends HttpServlet {
     private static final Logger log = getLogger(MealServlet.class);
     private CrudDao<Meal> mealDao;
-    private Sequence sequence;
     private DateTimeFormatter dateTimeFormatter;
 
     @Override
@@ -34,7 +32,6 @@ public class MealServlet extends HttpServlet {
         AppConfig appConfig = AppConfig.getInstance();
         mealDao = appConfig.getMealDao();
         dateTimeFormatter = appConfig.getDateTimeFormatter();
-        sequence = (Sequence) mealDao;
     }
 
     @Override
@@ -45,7 +42,7 @@ public class MealServlet extends HttpServlet {
         String strId = request.getParameter("id");
         Integer id = strId == null ? null : Integer.parseInt(strId);
         String action = request.getParameter("action");
-        log.debug("doGet params: id = {}, action= {}", strId, action );
+        log.debug("doGet params: id = {}, action= {}", strId, action);
 
         request.setAttribute("dtFormatter", dateTimeFormatter);
         if (action == null) {
@@ -104,9 +101,6 @@ public class MealServlet extends HttpServlet {
         int calories = Integer.parseInt(strCalories);
 
         final boolean isCreate = id == 0;
-        if (isCreate) {
-            id = sequence.nextId();
-        }
         Meal meal = new Meal(id, dateTime, description, calories);
         if (isCreate) {
             mealDao.add(meal);

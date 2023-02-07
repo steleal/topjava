@@ -6,13 +6,13 @@ import java.util.List;
 
 public interface CrudDao<T extends Identifiable> {
 
-    void add(T item);
+    T add(T item);
 
-    T getById(Integer id);
+    T getById(int id);
 
-    void update(T item);
+    T update(T item);
 
-    void delete(Integer id);
+    void delete(int id);
 
     List<T> getAll();
 
