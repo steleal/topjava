@@ -15,7 +15,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Comparator;
 import java.util.List;
 
 import static org.slf4j.LoggerFactory.getLogger;
@@ -37,50 +36,50 @@ public class MealServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         log.debug("doGet");
-        request.setCharacterEncoding("UTF-8");
 
-        String strId = request.getParameter("id");
-        Integer id = strId == null ? null : Integer.parseInt(strId);
         String action = request.getParameter("action");
-        log.debug("doGet params: id = {}, action= {}", strId, action);
-
-        request.setAttribute("dtFormatter", DATE_TIME_FORMATTER);
         if (action == null) {
-            log.debug("list All");
-            request.setAttribute("mealsTo", getMealsTo());
-            request.setAttribute("dtFormatter", DATE_TIME_FORMATTER);
-            request.getRequestDispatcher("/meals.jsp").forward(request, response);
+            forwardToMeals(request, response);
             return;
         }
 
-        MealTo mealTo;
+        int id;
         switch (action) {
             case "delete":
+                id = Integer.parseInt(request.getParameter("id"));
                 mealDao.delete(id);
                 response.sendRedirect("meals");
-                return;
-            case "add":
-                mealTo = MealTo.EMPTY;
                 break;
-//            case "view":
+            case "add":
+                forwardToMealEdit(request, response, MealTo.EMPTY);
+                break;
             case "edit":
-                mealTo = MealsUtil.createTo(mealDao.getById(id), false);
+                id = Integer.parseInt(request.getParameter("id"));
+                MealTo mealTo = MealsUtil.createTo(mealDao.getById(id), false);
+                forwardToMealEdit(request, response, mealTo);
                 break;
             default:
-                String errorMessage = "Action " + action + "is illegal";
-                log.error(errorMessage);
-                throw new IllegalArgumentException(errorMessage);
+                forwardToMeals(request, response);
+                break;
         }
+    }
 
+    private void forwardToMealEdit(HttpServletRequest request, HttpServletResponse response, MealTo mealTo) throws ServletException, IOException {
         log.debug("forward to meal-edit with mealTo: {}", mealTo);
         request.setAttribute("mealTo", mealTo);
         request.getRequestDispatcher("/meal-edit.jsp").forward(request, response);
     }
 
+    private void forwardToMeals(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        log.debug("list All");
+        request.setAttribute("mealsTo", getMealsTo());
+        request.setAttribute("dtFormatter", DATE_TIME_FORMATTER);
+        request.getRequestDispatcher("/meals.jsp").forward(request, response);
+    }
+
     private List<MealTo> getMealsTo() {
         log.debug("getMealsTo");
         List<Meal> meals = mealDao.getAll();
-        meals.sort(Comparator.comparing(Meal::getDateTime));
         return MealsUtil.toMealsTo(meals, CALORIES_PER_DAY);
     }
 

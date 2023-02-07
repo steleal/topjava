@@ -5,7 +5,6 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <link rel="stylesheet" href="css/style.css">
     <title>Meals</title>
-    <jsp:useBean id="dtFormatter" type="java.time.format.DateTimeFormatter" scope="request"/>
     <jsp:useBean id="mealTo" type="ru.javawebinar.topjava.model.MealTo" scope="request"/>
 </head>
 <body>
@@ -16,7 +15,7 @@
     <input type="hidden" name="id" value="${mealTo.id}">
     <div>
         <label for="dateTime">DateTime</label>
-        <input type="datetime-local" id="dateTime" name="dateTime" value="${mealTo.dateTime.format(dtFormatter)}">
+        <input type="datetime-local" id="dateTime" name="dateTime" value="${mealTo.dateTime}">
     </div>
     <div>
         <label for="description">Description</label>
