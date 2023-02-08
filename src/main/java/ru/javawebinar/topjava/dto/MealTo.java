@@ -1,10 +1,8 @@
-package ru.javawebinar.topjava.model;
+package ru.javawebinar.topjava.dto;
 
 import java.time.LocalDateTime;
 
 public class MealTo {
-    public static final MealTo EMPTY = new MealTo(0, null, null, 0, false);
-
     private final int id;
 
     private final LocalDateTime dateTime;
@@ -15,7 +13,7 @@ public class MealTo {
 
     private final boolean excess;
 
-    public MealTo(Integer id, LocalDateTime dateTime, String description, int calories, boolean excess) {
+    public MealTo(int id, LocalDateTime dateTime, String description, int calories, boolean excess) {
         this.id = id;
         this.dateTime = dateTime;
         this.description = description;

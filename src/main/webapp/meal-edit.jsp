@@ -5,25 +5,25 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <link rel="stylesheet" href="css/style.css">
     <title>Meals</title>
-    <jsp:useBean id="mealTo" type="ru.javawebinar.topjava.model.MealTo" scope="request"/>
+    <jsp:useBean id="mealEditTo" type="ru.javawebinar.topjava.dto.MealEditTo" scope="request"/>
 </head>
 <body>
 <h3><a href="index.html">Home</a></h3>
 <hr>
 <h2>Edit Meal</h2>
 <form method="post" action="meals" enctype="application/x-www-form-urlencoded">
-    <input type="hidden" name="id" value="${mealTo.id}">
+    <input type="hidden" name="id" value="${mealEditTo.id}">
     <div>
         <label for="dateTime">DateTime</label>
-        <input type="datetime-local" id="dateTime" name="dateTime" value="${mealTo.dateTime}">
+        <input type="datetime-local" id="dateTime" name="dateTime" value="${mealEditTo.dateTime}">
     </div>
     <div>
         <label for="description">Description</label>
-        <input type="text" id="description" name="description" value="${mealTo.description}" placeholder="Description">
+        <input type="text" id="description" name="description" value="${mealEditTo.description}" placeholder="Description">
     </div>
     <div>
         <label for="calories">Calories</label>
-        <input type="number" id="calories" name="calories" value="${mealTo.calories}" placeholder="1000" min="0" max="10000">
+        <input type="number" id="calories" name="calories" value="${mealEditTo.calories}" placeholder="1000" min="0" max="10000">
     </div>
     <button type="submit">Save</button>
     <button type="button" onclick="window.history.back()">Cancel</button>

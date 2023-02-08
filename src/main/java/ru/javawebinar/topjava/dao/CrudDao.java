@@ -15,5 +15,4 @@ public interface CrudDao<T extends Identifiable> {
     void delete(int id);
 
     List<T> getAll();
-
 }

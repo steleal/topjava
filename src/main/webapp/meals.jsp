@@ -20,7 +20,7 @@
         <th> </th>
     </tr>
     <c:forEach items="${mealsTo}" var="mealTo">
-        <jsp:useBean id="mealTo" type="ru.javawebinar.topjava.model.MealTo"/>
+        <jsp:useBean id="mealTo" type="ru.javawebinar.topjava.dto.MealTo"/>
         <tr data-meal-excess = ${mealTo.excess}>
             <td>${mealTo.dateTime.format(dtFormatter)}</td>
             <td>${mealTo.description}</td>

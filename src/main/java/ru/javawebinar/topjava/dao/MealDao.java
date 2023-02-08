@@ -5,15 +5,16 @@ import ru.javawebinar.topjava.model.Meal;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
-public class MemoryCrudDao implements CrudDao<Meal> {
-    private static final Logger log = getLogger(MemoryCrudDao.class);
+public class MealDao implements CrudDao<Meal> {
+    private static final Logger log = getLogger(MealDao.class);
 
-    private final ConcurrentHashMap<Integer, Meal> storage = new ConcurrentHashMap<>();
+    private final Map<Integer, Meal> storage = new ConcurrentHashMap<>();
     private final AtomicInteger idSequence = new AtomicInteger();
 
     @Override
@@ -21,7 +22,8 @@ public class MemoryCrudDao implements CrudDao<Meal> {
         int id = idSequence.incrementAndGet();
         Meal meal = new Meal(id, m.getDateTime(), m.getDescription(), m.getCalories());
         log.debug("Save {}", meal);
-        return storage.put(id, meal);
+        storage.put(id, meal);
+        return meal;
     }
 
     @Override
@@ -33,7 +35,8 @@ public class MemoryCrudDao implements CrudDao<Meal> {
     @Override
     public Meal update(Meal item) {
         log.debug("Update {}", item);
-        return storage.replace(item.getId(), item);
+        storage.replace(item.getId(), item);
+        return item;
     }
 
     @Override
@@ -47,5 +50,4 @@ public class MemoryCrudDao implements CrudDao<Meal> {
         log.debug("getAll");
         return new ArrayList<>(storage.values());
     }
-
 }

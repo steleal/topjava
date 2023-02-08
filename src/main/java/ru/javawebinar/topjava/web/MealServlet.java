@@ -2,9 +2,10 @@ package ru.javawebinar.topjava.web;
 
 import org.slf4j.Logger;
 import ru.javawebinar.topjava.dao.CrudDao;
-import ru.javawebinar.topjava.dao.MemoryCrudDao;
+import ru.javawebinar.topjava.dao.MealDao;
 import ru.javawebinar.topjava.model.Meal;
-import ru.javawebinar.topjava.model.MealTo;
+import ru.javawebinar.topjava.dto.MealEditTo;
+import ru.javawebinar.topjava.dto.MealTo;
 import ru.javawebinar.topjava.util.MealsUtil;
 
 import javax.servlet.ServletConfig;
@@ -29,7 +30,7 @@ public class MealServlet extends HttpServlet {
     @Override
     public void init(ServletConfig servletConfig) throws ServletException {
         super.init(servletConfig);
-        mealDao = new MemoryCrudDao();
+        mealDao = new MealDao();
         MealsUtil.getStartedMealList().forEach(mealDao::add);
     }
 
@@ -38,24 +39,18 @@ public class MealServlet extends HttpServlet {
         log.debug("doGet");
 
         String action = request.getParameter("action");
-        if (action == null) {
-            forwardToMeals(request, response);
-            return;
-        }
-
-        int id;
-        switch (action) {
+        switch ((action == null) ? "" : action) {
             case "delete":
-                id = Integer.parseInt(request.getParameter("id"));
+                int id = Integer.parseInt(request.getParameter("id"));
                 mealDao.delete(id);
                 response.sendRedirect("meals");
                 break;
             case "add":
-                forwardToMealEdit(request, response, MealTo.EMPTY);
+                forwardToMealEdit(request, response, MealEditTo.EMPTY);
                 break;
             case "edit":
-                id = Integer.parseInt(request.getParameter("id"));
-                MealTo mealTo = MealsUtil.createTo(mealDao.getById(id), false);
+                int editId = Integer.parseInt(request.getParameter("id"));
+                MealEditTo mealTo = MealsUtil.createTo(mealDao.getById(editId));
                 forwardToMealEdit(request, response, mealTo);
                 break;
             default:
@@ -64,9 +59,9 @@ public class MealServlet extends HttpServlet {
         }
     }
 
-    private void forwardToMealEdit(HttpServletRequest request, HttpServletResponse response, MealTo mealTo) throws ServletException, IOException {
-        log.debug("forward to meal-edit with mealTo: {}", mealTo);
-        request.setAttribute("mealTo", mealTo);
+    private void forwardToMealEdit(HttpServletRequest request, HttpServletResponse response, MealEditTo mealEditTo) throws ServletException, IOException {
+        log.debug("forward to meal-edit with mealTo: {}", mealEditTo);
+        request.setAttribute("mealEditTo", mealEditTo);
         request.getRequestDispatcher("/meal-edit.jsp").forward(request, response);
     }
 
