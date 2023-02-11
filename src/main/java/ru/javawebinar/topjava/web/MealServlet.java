@@ -2,7 +2,7 @@ package ru.javawebinar.topjava.web;
 
 import org.slf4j.Logger;
 import ru.javawebinar.topjava.dao.CrudDao;
-import ru.javawebinar.topjava.dao.MealDao;
+import ru.javawebinar.topjava.dao.MemoryMealDao;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.dto.MealEditTo;
 import ru.javawebinar.topjava.dto.MealTo;
@@ -30,7 +30,7 @@ public class MealServlet extends HttpServlet {
     @Override
     public void init(ServletConfig servletConfig) throws ServletException {
         super.init(servletConfig);
-        mealDao = new MealDao();
+        mealDao = new MemoryMealDao();
         MealsUtil.getStartedMealList().forEach(mealDao::add);
     }
 

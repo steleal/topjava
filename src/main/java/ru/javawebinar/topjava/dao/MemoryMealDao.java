@@ -11,8 +11,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
-public class MealDao implements CrudDao<Meal> {
-    private static final Logger log = getLogger(MealDao.class);
+public class MemoryMealDao implements CrudDao<Meal> {
+    private static final Logger log = getLogger(MemoryMealDao.class);
 
     private final Map<Integer, Meal> storage = new ConcurrentHashMap<>();
     private final AtomicInteger idSequence = new AtomicInteger();
@@ -35,7 +35,9 @@ public class MealDao implements CrudDao<Meal> {
     @Override
     public Meal update(Meal item) {
         log.debug("Update {}", item);
-        storage.replace(item.getId(), item);
+        if (storage.replace(item.getId(), item) == null) {
+            return null;
+        }
         return item;
     }
 
