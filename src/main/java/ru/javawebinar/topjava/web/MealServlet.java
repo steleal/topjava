@@ -3,9 +3,9 @@ package ru.javawebinar.topjava.web;
 import org.slf4j.Logger;
 import ru.javawebinar.topjava.dao.CrudDao;
 import ru.javawebinar.topjava.dao.MemoryMealDao;
-import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.dto.MealEditTo;
 import ru.javawebinar.topjava.dto.MealTo;
+import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.util.MealsUtil;
 
 import javax.servlet.ServletConfig;
@@ -40,19 +40,21 @@ public class MealServlet extends HttpServlet {
 
         String action = request.getParameter("action");
         switch ((action == null) ? "" : action) {
-            case "delete":
+            case "delete": {
                 int id = Integer.parseInt(request.getParameter("id"));
                 mealDao.delete(id);
                 response.sendRedirect("meals");
                 break;
+            }
             case "add":
                 forwardToMealEdit(request, response, MealEditTo.EMPTY);
                 break;
-            case "edit":
-                int editId = Integer.parseInt(request.getParameter("id"));
-                MealEditTo mealTo = MealsUtil.createTo(mealDao.getById(editId));
+            case "edit": {
+                int id = Integer.parseInt(request.getParameter("id"));
+                MealEditTo mealTo = MealsUtil.createTo(mealDao.getById(id));
                 forwardToMealEdit(request, response, mealTo);
                 break;
+            }
             default:
                 forwardToMeals(request, response);
                 break;
