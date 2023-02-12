@@ -2,9 +2,9 @@ package ru.javawebinar.topjava.web;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 import ru.javawebinar.topjava.model.Meal;
-import ru.javawebinar.topjava.repository.inmemory.InMemoryMealRepository;
-import ru.javawebinar.topjava.service.MealService;
 import ru.javawebinar.topjava.web.meal.MealRestController;
 
 import javax.servlet.ServletException;
@@ -23,7 +23,9 @@ public class MealServlet extends HttpServlet {
 
     @Override
     public void init() {
-        controller = new MealRestController(new MealService(new InMemoryMealRepository()));
+        try (ConfigurableApplicationContext appCtx = new ClassPathXmlApplicationContext("spring/spring-app.xml")) {
+            this.controller = appCtx.getBean(MealRestController.class);
+        }
     }
 
     @Override
