@@ -27,7 +27,7 @@ public class InMemoryMealRepository implements MealRepository {
     private final Lock modify = new ReentrantLock();
 
     {
-        MealsUtil.meals.forEach(meal -> save(meal, 1));
+        MealsUtil.meals.forEach(meal -> save(meal, meal.getUserId()));
     }
 
     @Override
