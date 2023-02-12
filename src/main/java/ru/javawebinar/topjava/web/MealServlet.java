@@ -12,7 +12,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 
@@ -68,6 +70,14 @@ public class MealServlet extends HttpServlet {
                 request.setAttribute("meal", meal);
                 request.getRequestDispatcher("/mealForm.jsp").forward(request, response);
                 break;
+            case "filter":
+                LocalDate startDate = toDate(request.getParameter("startDate"));
+                LocalDate endDate = toDate(request.getParameter("endDate"));
+                LocalTime startTime = toTime(request.getParameter("startTime"));
+                LocalTime endTime = toTime(request.getParameter("endTime"));
+                request.setAttribute("meals", controller.getFiltered(startDate, endDate, startTime, endTime));
+                request.getRequestDispatcher("/meals.jsp").forward(request, response);
+                break;
             case "all":
             default:
                 log.info("getAll");
@@ -84,5 +94,17 @@ public class MealServlet extends HttpServlet {
 
     private int getAuthUserId() {
         return SecurityUtil.authUserId();
+    }
+
+    private LocalDate toDate(String strDate) {
+        return strDate == null || strDate.isEmpty()
+                ? null
+                : LocalDate.parse(strDate);
+    }
+
+    private LocalTime toTime(String strTime) {
+        return strTime == null || strTime.isEmpty()
+                ? null
+                : LocalTime.parse(strTime);
     }
 }
