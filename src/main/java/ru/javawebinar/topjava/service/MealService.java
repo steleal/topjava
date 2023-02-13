@@ -38,7 +38,7 @@ public class MealService {
     }
 
     /**
-     * Возвращает список еды включая start и end.
+     * Returns collection of meals with dateTime in range from start to end, inclusive.
      */
     public Collection<Meal> getFilteredByDate(LocalDate start, LocalDate end, int userId) {
         return repository.getFilteredByDate(start, end, userId);

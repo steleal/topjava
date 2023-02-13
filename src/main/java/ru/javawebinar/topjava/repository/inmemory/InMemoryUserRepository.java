@@ -55,8 +55,8 @@ public class InMemoryUserRepository implements UserRepository {
     @Override
     public User getByEmail(String email) {
         log.info("getByEmail {}", email);
-        // Наивная реализация.
-        // Полагается на уникальность и not null User.email'а средствами БД.
+        // Simple implementation.
+        // Believe DB checks that user emails are unique and not null.
         return repository.values().stream()
                 .filter(user -> user.getEmail().equalsIgnoreCase(email))
                 .findFirst()
