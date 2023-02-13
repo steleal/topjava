@@ -42,6 +42,7 @@ public class MealRestController {
 
     public Meal create(Meal meal) {
         int userId = authUserId();
+        meal.setUserId(userId);
         log.info("create {}, userId = {}", meal, userId);
         checkNew(meal);
         return service.create(meal, userId);
@@ -49,6 +50,7 @@ public class MealRestController {
 
     public void update(Meal meal, int mealId) {
         int userId = authUserId();
+        meal.setUserId(userId);
         log.info("update {}, userId = {}", meal, userId);
         assureIdConsistent(meal, mealId);
         service.update(meal, userId);
