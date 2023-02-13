@@ -9,14 +9,11 @@ import ru.javawebinar.topjava.util.MealsUtil;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -24,7 +21,6 @@ import java.util.stream.Collectors;
 public class InMemoryMealRepository implements MealRepository {
     private final Map<Integer, Meal> repository = new ConcurrentHashMap<>();
     private final AtomicInteger counter = new AtomicInteger(0);
-    private final Lock modify = new ReentrantLock();
 
     {
         MealsUtil.meals.forEach(meal -> save(meal, meal.getUserId()));
@@ -41,27 +37,16 @@ public class InMemoryMealRepository implements MealRepository {
             return meal;
         }
 
-        modify.lock();
-        try {
-            Meal om = get(meal.getId(), userId);
-            if (om == null) {
-                return null;
-            }
-            repository.put(meal.getId(), meal);
-            return meal;
-        } finally {
-            modify.unlock();
+        // update case
+        if (get(meal.getId(), userId) == null) {
+            return null;
         }
+        return repository.computeIfPresent(meal.getId(), (k, oldMeal) -> meal);
     }
 
     @Override
     public boolean delete(int id, int userId) {
-        modify.lock();
-        try {
-            return get(id, userId) != null && repository.remove(id) != null;
-        } finally {
-            modify.unlock();
-        }
+        return get(id, userId) != null && repository.remove(id) != null;
     }
 
     @Override
@@ -71,12 +56,12 @@ public class InMemoryMealRepository implements MealRepository {
     }
 
     @Override
-    public Collection<Meal> getAll(int userId) {
+    public List<Meal> getAll(int userId) {
         return getFilteredByPredicate(meal -> meal.getUserId() == userId);
     }
 
     @Override
-    public Collection<Meal> getFilteredByDate(LocalDate start, LocalDate end, int userId) {
+    public List<Meal> getFilteredByDate(LocalDate start, LocalDate end, int userId) {
         LocalDateTime startDateTime = (start == null) ? LocalDateTime.MIN : start.atTime(LocalTime.MIN);
         LocalDateTime endDateTime = (end == null) ? LocalDateTime.MAX : end.plusDays(1).atTime(LocalTime.MIN);
 
