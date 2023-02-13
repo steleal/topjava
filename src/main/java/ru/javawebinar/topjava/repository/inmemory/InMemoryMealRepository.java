@@ -77,8 +77,8 @@ public class InMemoryMealRepository implements MealRepository {
 
     @Override
     public Collection<Meal> getFilteredByDate(LocalDate start, LocalDate end, int userId) {
-        LocalDateTime startDateTime = start.atTime(LocalTime.MIN);
-        LocalDateTime endDateTime = end.plusDays(1).atTime(LocalTime.MIN);
+        LocalDateTime startDateTime = (start == null) ? LocalDateTime.MIN : start.atTime(LocalTime.MIN);
+        LocalDateTime endDateTime = (end == null) ? LocalDateTime.MAX : end.plusDays(1).atTime(LocalTime.MIN);
 
         return getFilteredByPredicate(meal -> meal.getUserId() == userId
                 && DateTimeUtil.isBetweenHalfOpen(meal.getDateTime(), startDateTime, endDateTime));
