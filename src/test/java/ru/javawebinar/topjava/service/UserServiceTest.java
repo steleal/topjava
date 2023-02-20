@@ -30,7 +30,9 @@ public class UserServiceTest {
     static {
         // Only for postgres driver logging
         // It uses java.util.logging and logged via jul-to-slf4j bridge
-        SLF4JBridgeHandler.install();
+        if (!SLF4JBridgeHandler.isInstalled()) {
+            SLF4JBridgeHandler.install();
+        }
     }
 
     @Autowired
