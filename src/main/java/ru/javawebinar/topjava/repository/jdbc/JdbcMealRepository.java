@@ -5,8 +5,7 @@ import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.repository.MealRepository;
@@ -19,10 +18,14 @@ public class JdbcMealRepository implements MealRepository {
     private static final BeanPropertyRowMapper<Meal> ROW_MAPPER = BeanPropertyRowMapper.newInstance(Meal.class);
 
     private final NamedParameterJdbcTemplate jdbc;
+    private final SimpleJdbcInsert insertMeal;
 
     @Autowired
     public JdbcMealRepository(NamedParameterJdbcTemplate namedJdbcTemplate) {
         this.jdbc = namedJdbcTemplate;
+        this.insertMeal = new SimpleJdbcInsert(namedJdbcTemplate.getJdbcTemplate())
+                .withTableName("meals")
+                .usingGeneratedKeyColumns("id");
     }
 
     @Override
@@ -35,22 +38,14 @@ public class JdbcMealRepository implements MealRepository {
                 .addValue("calories", meal.getCalories());
 
         if (meal.isNew()) {
-            KeyHolder keyHolder = new GeneratedKeyHolder();
-            jdbc.update(
-                    "INSERT INTO meals (user_id, date_time, description, calories)\n" +
-                            "VALUES (:user_id, :date_time, :description, :calories);",
-                    map, keyHolder, new String[]{"id"});
-            Number key = keyHolder.getKey();
-            if (key == null) {
-                return null;
-            }
-            meal.setId(key.intValue());
+            Number newKey = insertMeal.executeAndReturnKey(map);
+            meal.setId(newKey.intValue());
         } else if (jdbc.update(
-                "UPDATE meals\n" +
-                        "SET date_time = :date_time,\n" +
-                        "    description = :description,\n" +
-                        "    calories = :calories\n" +
-                        "WHERE id = :id\n" +
+                "UPDATE meals " +
+                        "SET date_time = :date_time, " +
+                        "    description = :description, " +
+                        "    calories = :calories " +
+                        "WHERE id = :id " +
                         "  AND user_id = :user_id",
                 map) == 0) {
             return null;
@@ -89,11 +84,11 @@ public class JdbcMealRepository implements MealRepository {
                 .addValue("end_dt", endDateTime)
                 .addValue("user_id", userId);
         return jdbc.query(
-                "SELECT *\n" +
-                        "FROM meals\n" +
-                        "WHERE user_id = :user_id\n" +
-                        "  AND date_time >= :start_dt\n" +
-                        "  AND date_time < :end_dt\n" +
+                "SELECT * " +
+                        "FROM meals " +
+                        "WHERE user_id = :user_id " +
+                        "  AND date_time >= :start_dt " +
+                        "  AND date_time < :end_dt " +
                         "ORDER BY date_time DESC", map, ROW_MAPPER);
     }
 }
