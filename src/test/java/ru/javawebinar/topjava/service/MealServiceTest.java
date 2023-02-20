@@ -56,8 +56,9 @@ public class MealServiceTest {
 
     @Test
     public void createDuplicateDateTime() {
-        Meal newMeal = new Meal(userMeal0);
-        newMeal.setId(null);
+        Meal newMeal = getNew();
+        Meal existsInDb = service.get(userMeal0.getId(), USER_ID);
+        newMeal.setDateTime(existsInDb.getDateTime());
         assertThrows(DataAccessException.class, () -> service.create(newMeal, USER_ID));
     }
 
