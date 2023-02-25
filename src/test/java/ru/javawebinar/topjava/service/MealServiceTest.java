@@ -3,9 +3,9 @@ package ru.javawebinar.topjava.service;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
+import org.junit.rules.Stopwatch;
+import org.junit.runner.Description;
 import org.junit.runner.RunWith;
-import org.junit.runners.model.Statement;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -35,22 +35,19 @@ public class MealServiceTest {
     private static final Logger log = getLogger(MealServiceTest.class);
 
     @ClassRule
-    @Rule
-    public static TestRule timeLogRule = (statement, description) -> new Statement() {
+    @Rule(order = Integer.MIN_VALUE)
+    public static Stopwatch timeLogRule = new Stopwatch(){
+        private final StringBuilder builder = new StringBuilder("\nTest execution time summary:\n");
+
         @Override
-        public void evaluate() throws Throwable {
-            long startTime = System.currentTimeMillis();
-            statement.evaluate();
-            long executionTime = System.currentTimeMillis() - startTime;
+        protected void finished(long nanos, Description description) {
             if (description.isTest()) {
-                log.info("Test method '{}.{}' completed in {} ms",
-                        description.getTestClass().getSimpleName(),
-                        description.getMethodName(),
-                        executionTime);
+                String logMessage = String.format("\t'%s' - %d ms",
+                        description.getMethodName(), Math.round(nanos / 1000_000.0));
+                log.info(logMessage);
+                builder.append(logMessage).append(System.lineSeparator());
             } else if (description.isSuite()){
-                log.info("Test class '{}' completed in {} ms",
-                        description.getTestClass().getSimpleName(),
-                        executionTime);
+                log.info(builder.toString());
             }
         }
     };

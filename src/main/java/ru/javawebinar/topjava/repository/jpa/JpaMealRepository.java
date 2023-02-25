@@ -23,13 +23,14 @@ public class JpaMealRepository implements MealRepository {
     @Transactional
     public Meal save(Meal meal, int userId) {
         Objects.requireNonNull(meal, "meal must not be null");
-        meal.setUser(em.getReference(User.class, userId));
         if (meal.isNew()) {
+            meal.setUser(em.getReference(User.class, userId));
             em.persist(meal);
             return meal;
         } else if (get(meal.id(), userId) == null) {
             return null;
         }
+        meal.setUser(em.getReference(User.class, userId));
         return em.merge(meal);
     }
 
