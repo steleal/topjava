@@ -1,7 +1,12 @@
 package ru.javawebinar.topjava.service;
 
+import org.junit.ClassRule;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
+import org.junit.runners.model.Statement;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.test.context.ContextConfiguration;
@@ -15,6 +20,7 @@ import java.time.LocalDate;
 import java.time.Month;
 
 import static org.junit.Assert.assertThrows;
+import static org.slf4j.LoggerFactory.getLogger;
 import static ru.javawebinar.topjava.MealTestData.*;
 import static ru.javawebinar.topjava.UserTestData.ADMIN_ID;
 import static ru.javawebinar.topjava.UserTestData.USER_ID;
@@ -26,6 +32,28 @@ import static ru.javawebinar.topjava.UserTestData.USER_ID;
 @RunWith(SpringRunner.class)
 @Sql(scripts = "classpath:db/populateDB.sql", config = @SqlConfig(encoding = "UTF-8"))
 public class MealServiceTest {
+    private static final Logger log = getLogger(MealServiceTest.class);
+
+    @ClassRule
+    @Rule
+    public static TestRule timeLogRule = (statement, description) -> new Statement() {
+        @Override
+        public void evaluate() throws Throwable {
+            long startTime = System.currentTimeMillis();
+            statement.evaluate();
+            long executionTime = System.currentTimeMillis() - startTime;
+            if (description.isTest()) {
+                log.info("Test method '{}.{}' completed in {} ms",
+                        description.getTestClass().getSimpleName(),
+                        description.getMethodName(),
+                        executionTime);
+            } else if (description.isSuite()){
+                log.info("Test class '{}' completed in {} ms",
+                        description.getTestClass().getSimpleName(),
+                        executionTime);
+            }
+        }
+    };
 
     @Autowired
     private MealService service;
