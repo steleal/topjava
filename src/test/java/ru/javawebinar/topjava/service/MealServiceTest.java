@@ -18,6 +18,7 @@ import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import java.time.LocalDate;
 import java.time.Month;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertThrows;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -36,17 +37,17 @@ public class MealServiceTest {
 
     @ClassRule
     @Rule(order = Integer.MIN_VALUE)
-    public static Stopwatch timeLogRule = new Stopwatch(){
-        private final StringBuilder builder = new StringBuilder("\nTest execution time summary:\n");
+    public static Stopwatch timeLogRule = new Stopwatch() {
+        private final StringBuilder builder = new StringBuilder("\n\tTest execution time summary:\n");
 
         @Override
         protected void finished(long nanos, Description description) {
             if (description.isTest()) {
-                String logMessage = String.format("\t'%s' - %d ms",
-                        description.getMethodName(), Math.round(nanos / 1000_000.0));
+                String logMessage = String.format("%-23s %6s ms",
+                        description.getMethodName(), TimeUnit.NANOSECONDS.toMillis(nanos));
                 log.info(logMessage);
                 builder.append(logMessage).append(System.lineSeparator());
-            } else if (description.isSuite()){
+            } else if (description.isSuite()) {
                 log.info(builder.toString());
             }
         }
