@@ -14,17 +14,19 @@ import java.util.Optional;
 @Transactional(readOnly = true)
 public interface CrudMealRepository extends JpaRepository<Meal, Integer> {
     @Override
-    @Modifying
     @Transactional
     Meal save(Meal meal);
 
     @Modifying
     @Transactional
-    int deleteByIdAndUserId(int id, int userId);
+    @Query(name = Meal.DELETE)
+    int delete(@Param("id") int id, @Param("userId") int userId);
 
-    Optional<Meal> findByIdAndUserId(int id, int userId);
+    @Query("SELECT m FROM Meal m WHERE m.id=:id AND m.user.id=:userId")
+    Optional<Meal> get(@Param("id") int id, @Param("userId") int userId);
 
-    List<Meal> getAllByUserIdOrderByDateTimeDesc(int userId);
+    @Query(name = Meal.ALL_SORTED)
+    List<Meal> getAll(@Param("userId") int userId);
 
     @Query(name = Meal.GET_BETWEEN)
     List<Meal> getBetweenHalfOpen(@Param("startDateTime") LocalDateTime startDateTime,
@@ -32,5 +34,5 @@ public interface CrudMealRepository extends JpaRepository<Meal, Integer> {
                                   @Param("userId") int userId);
 
     @Query("SELECT m From Meal m JOIN FETCH m.user u WHERE m.id = :id AND u.id = :userId")
-    Optional<Meal> findWithUser(@Param("id") int id, @Param("userId") int userId);
+    Optional<Meal> getWithUser(@Param("id") int id, @Param("userId") int userId);
 }

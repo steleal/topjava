@@ -1,6 +1,7 @@
 package ru.javawebinar.topjava.repository.datajpa;
 
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.repository.MealRepository;
 
@@ -18,9 +19,10 @@ public class DataJpaMealRepository implements MealRepository {
         this.userRepository = userRepository;
     }
 
+    @Transactional
     @Override
     public Meal save(Meal meal, int userId) {
-        if (meal.isNew() || mealRepository.findByIdAndUserId(meal.getId(), userId).isPresent()) {
+        if (meal.isNew() || mealRepository.get(meal.getId(), userId).isPresent()) {
             meal.setUser(userRepository.getReferenceById(userId));
             return mealRepository.save(meal);
         }
@@ -29,17 +31,17 @@ public class DataJpaMealRepository implements MealRepository {
 
     @Override
     public boolean delete(int id, int userId) {
-        return mealRepository.deleteByIdAndUserId(id, userId) != 0;
+        return mealRepository.delete(id, userId) != 0;
     }
 
     @Override
     public Meal get(int id, int userId) {
-        return mealRepository.findByIdAndUserId(id, userId).orElse(null);
+        return mealRepository.get(id, userId).orElse(null);
     }
 
     @Override
     public List<Meal> getAll(int userId) {
-        return mealRepository.getAllByUserIdOrderByDateTimeDesc(userId);
+        return mealRepository.getAll(userId);
     }
 
     @Override
@@ -49,6 +51,6 @@ public class DataJpaMealRepository implements MealRepository {
 
     @Override
     public Meal getWithUser(int id, int userId) {
-        return mealRepository.findWithUser(id, userId).orElse(null);
+        return mealRepository.getWithUser(id, userId).orElse(null);
     }
 }
