@@ -70,6 +70,13 @@
         <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
             <constructor-arg ref="dataSource"/>
         </bean>
+
+        <bean id = "validatorFactory" class="javax.validation.Validation"
+              factory-method="buildDefaultValidatorFactory"/>
+
+        <bean id = "validator" class="javax.validation.Validator"
+              factory-bean="validatorFactory"
+              factory-method="getValidator"/>
     </beans>
 
     <beans profile="jpa,datajpa">
