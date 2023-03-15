@@ -23,13 +23,13 @@ import static ru.javawebinar.topjava.util.DateTimeUtil.parseLocalTime;
 public class JspMealController extends AbstractMealController {
 
     @GetMapping
-    public String getMeals(Model model) {
+    public String getAll(Model model) {
         model.addAttribute("meals", super.getAll());
         return "meals";
     }
 
     @PostMapping("/filter")
-    public String getFilteredMeals(Model model, HttpServletRequest request) {
+    public String getBetween(Model model, HttpServletRequest request) {
         LocalDate startDate = parseLocalDate(request.getParameter("startDate"));
         LocalDate endDate = parseLocalDate(request.getParameter("endDate"));
         LocalTime startTime = parseLocalTime(request.getParameter("startTime"));
@@ -40,19 +40,19 @@ public class JspMealController extends AbstractMealController {
     }
 
     @GetMapping("/create")
-    public String createMeal(Model model) {
+    public String create(Model model) {
         model.addAttribute("meal", new Meal(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES), "", 1000));
         return "mealForm";
     }
 
     @GetMapping("/update")
-    public String updateMeal(Model model, HttpServletRequest request) {
+    public String update(Model model, HttpServletRequest request) {
         model.addAttribute("meal", super.get(getId(request)));
         return "mealForm";
     }
 
     @PostMapping
-    public String createOrUpdateMeal(HttpServletRequest request) {
+    public String createOrUpdate(HttpServletRequest request) {
         boolean isNew = !StringUtils.hasLength(request.getParameter("id"));
         Meal meal = new Meal(isNew ? null : getId(request),
                 LocalDateTime.parse(request.getParameter("dateTime")),
@@ -67,7 +67,7 @@ public class JspMealController extends AbstractMealController {
     }
 
     @GetMapping("/delete")
-    public String deleteMeal(HttpServletRequest request) {
+    public String delete(HttpServletRequest request) {
         super.delete(getId(request));
         return "redirect:/meals";
     }
