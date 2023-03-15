@@ -32,12 +32,12 @@ public class JdbcUserRepository implements UserRepository {
 
     private final SimpleJdbcInsert insertUser;
 
-    private final JdbcValidator validator;
+    private final ValidatorImpl validator;
 
     @Autowired
     public JdbcUserRepository(JdbcTemplate jdbcTemplate,
                               NamedParameterJdbcTemplate namedParameterJdbcTemplate,
-                              JdbcValidator validator) {
+                              ValidatorImpl validator) {
         this.insertUser = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("users")
                 .usingGeneratedKeyColumns("id");

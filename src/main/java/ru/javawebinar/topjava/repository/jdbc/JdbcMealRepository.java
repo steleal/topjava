@@ -27,11 +27,11 @@ public class JdbcMealRepository implements MealRepository {
 
     private final SimpleJdbcInsert insertMeal;
 
-    private final JdbcValidator validator;
+    private final ValidatorImpl validator;
 
     public JdbcMealRepository(JdbcTemplate jdbcTemplate,
                               NamedParameterJdbcTemplate namedParameterJdbcTemplate,
-                              JdbcValidator validator) {
+                              ValidatorImpl validator) {
         this.insertMeal = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("meal")
                 .usingGeneratedKeyColumns("id");

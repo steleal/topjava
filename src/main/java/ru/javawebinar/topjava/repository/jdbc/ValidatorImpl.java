@@ -8,10 +8,10 @@ import javax.validation.Validator;
 import java.util.Set;
 
 @Component
-public class JdbcValidator {
+public class ValidatorImpl {
     private final Validator validator;
 
-    public JdbcValidator(Validator validator) {
+    public ValidatorImpl(Validator validator) {
         this.validator = validator;
     }
 
