@@ -14,9 +14,8 @@ import ru.javawebinar.topjava.model.Role;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.repository.UserRepository;
 
-import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -95,20 +94,19 @@ public class JdbcUserRepository implements UserRepository {
     @Override
     public List<User> getAll() {
         List<User> users = jdbcTemplate.query("SELECT * FROM users ORDER BY name, email", ROW_MAPPER);
-        final Map<Integer, List<Role>> userRoles = getAllRoles();
+        final Map<Integer, Set<Role>> userRoles = getAllRoles();
         users.forEach(u -> u.setRoles(userRoles.get(u.getId())));
         return users;
     }
 
-    // todo extract to RolesDao
     private void insertRoles(Set<Role> roles, Integer userId) {
-        final List<MapSqlParameterSource> params = new ArrayList<>();
-        roles.forEach(role -> {
-            MapSqlParameterSource source = new MapSqlParameterSource();
-            source.addValue("role", role.name());
-            source.addValue("userId", userId);
-            params.add(source);
-        });
+        final List<MapSqlParameterSource> params = roles.stream()
+                .map(role -> {
+                    MapSqlParameterSource source = new MapSqlParameterSource();
+                    source.addValue("role", role.name());
+                    source.addValue("userId", userId);
+                    return source;
+                }).toList();
         namedParameterJdbcTemplate.batchUpdate("INSERT INTO user_role (user_id, role) VALUES (:userId, :role)",
                 params.toArray(MapSqlParameterSource[]::new));
     }
@@ -117,18 +115,19 @@ public class JdbcUserRepository implements UserRepository {
         jdbcTemplate.update("DELETE FROM user_role WHERE user_id=?", userId);
     }
 
-    private Map<Integer, List<Role>> getAllRoles() {
-        final Map<Integer, List<Role>> userRoles = new HashMap<>();
+    private Map<Integer, Set<Role>> getAllRoles() {
+        final Map<Integer, Set<Role>> userRoles = new HashMap<>();
         jdbcTemplate.query("SELECT role, user_id FROM user_role",
                 rs -> {
-                    userRoles.computeIfAbsent(rs.getInt("user_id"), k -> new ArrayList<>())
+                    userRoles.computeIfAbsent(rs.getInt("user_id"), k -> EnumSet.noneOf(Role.class))
                             .add(Role.valueOf(rs.getString("role")));
                 });
         return userRoles;
     }
 
     private Set<Role> getRoles(int userId) {
-        return new HashSet<>(jdbcTemplate.query("SELECT role FROM user_role  WHERE user_id=?",
-                (rs, rownum) -> Role.valueOf(rs.getString("role")), userId));
+        List<Role> roles = jdbcTemplate.query("SELECT role FROM user_role  WHERE user_id=?",
+                (rs, rownum) -> Role.valueOf(rs.getString("role")), userId);
+        return EnumSet.copyOf(roles);
     }
 }
