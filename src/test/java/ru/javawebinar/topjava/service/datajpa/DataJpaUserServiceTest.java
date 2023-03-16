@@ -27,4 +27,12 @@ public class DataJpaUserServiceTest extends AbstractUserServiceTest {
         Assert.assertThrows(NotFoundException.class,
                 () -> service.getWithMeals(NOT_FOUND));
     }
+
+    @Test
+    public void getWithMealsWithMultiRoleUser() {
+        User admin = service.getWithMeals(ADMIN_ID);
+        USER_MATCHER.assertMatch(admin, UserTestData.admin);
+        MEAL_MATCHER.assertMatch(admin.getMeals(), MealTestData.adminMeals);
+    }
+
 }
