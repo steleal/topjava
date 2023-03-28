@@ -93,6 +93,6 @@ class AdminRestControllerTest extends AbstractControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(USER_WITH_MEALS_MATCHER.contentJson(userService.getWithMeals(USER_ID)));
+                .andExpect(USER_WITH_MEALS_MATCHER.contentJson(UserTestData.getUserWithMeals()));
     }
 }
