@@ -63,7 +63,7 @@ public class AdminRestController extends AbstractUserController {
     }
 
     @Override
-    @PostMapping("/{id}")
+    @PatchMapping("/{id}")
     protected void enable(@PathVariable int id, @RequestParam boolean enabled) {
         super.enable(id, enabled);
     }

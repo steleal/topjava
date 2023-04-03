@@ -96,14 +96,10 @@ class AdminRestControllerTest extends AbstractControllerTest {
 
     @Test
     void enabled() throws Exception {
-        perform(MockMvcRequestBuilders.post(REST_URL + USER_ID)
+        perform(MockMvcRequestBuilders.patch(REST_URL + USER_ID)
                 .param("enabled", "false"))
                 .andExpect(status().isOk());
 
-        perform(MockMvcRequestBuilders.get(REST_URL + USER_ID))
-                .andExpect(status().isOk())
-                .andDo(print())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(USER_MATCHER.contentJson(getDisabledUser()));
+        USER_MATCHER.assertMatch(userService.get(USER_ID), getDisabledUser());
     }
 }
