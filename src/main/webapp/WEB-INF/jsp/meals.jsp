@@ -33,7 +33,7 @@
         </dl>
     </form>
     <button class="btn btn-danger" onclick="clearFilter()"><spring:message code="common.cancel"/></button>
-    <button class="btn btn-primary" onclick="filterTable()"><spring:message code="meal.filter"/></button>
+    <button class="btn btn-primary" onclick="ctx.updateTable()"><spring:message code="meal.filter"/></button>
 
     <hr>
         <button class="btn btn-primary" onclick="add()">
