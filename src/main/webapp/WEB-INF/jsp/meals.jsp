@@ -14,25 +14,26 @@
     <h3><spring:message code="meal.title"/></h3>
 
 <%--        Meal filter--%>
-    <form method="get" action="meals/filter">
+    <form role="form" id="filter">
         <dl>
             <dt><spring:message code="meal.startDate"/>:</dt>
-            <dd><input type="date" name="startDate" value="${param.startDate}"></dd>
+            <dd><input type="date" name="startDate" id="startDate"></dd>
         </dl>
         <dl>
             <dt><spring:message code="meal.endDate"/>:</dt>
-            <dd><input type="date" name="endDate" value="${param.endDate}"></dd>
+            <dd><input type="date" name="endDate" id="endDate"></dd>
         </dl>
         <dl>
             <dt><spring:message code="meal.startTime"/>:</dt>
-            <dd><input type="time" name="startTime" value="${param.startTime}"></dd>
+            <dd><input type="time" name="startTime" id="startTime"></dd>
         </dl>
         <dl>
             <dt><spring:message code="meal.endTime"/>:</dt>
-            <dd><input type="time" name="endTime" value="${param.endTime}"></dd>
+            <dd><input type="time" name="endTime" id="endTime"></dd>
         </dl>
-        <button type="submit"><spring:message code="meal.filter"/></button>
     </form>
+    <button class="btn btn-primary" onclick="filterTable()"><spring:message code="meal.filter"/></button>
+
     <hr>
         <button class="btn btn-primary" onclick="add()">
             <span class="fa fa-plus"></span>

@@ -5,6 +5,18 @@ const ctx = {
     ajaxUrl: mealAjaxUrl
 };
 
+function filterTable() {
+    $.ajax({
+        type: 'GET',
+        url: mealAjaxUrl + 'filter',
+        data: $('#filter').serialize(),
+        success: function (data) {
+            ctx.datatableApi.clear().rows.add(data).draw();
+        }
+    });
+    return false;
+}
+
 // $(document).ready(function () {
 $(function () {
     makeEditable(
