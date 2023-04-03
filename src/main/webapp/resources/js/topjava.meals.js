@@ -17,6 +17,11 @@ function filterTable() {
     return false;
 }
 
+function clearFilter() {
+    $("#filter")[0].reset();
+    filterTable();
+}
+
 // $(document).ready(function () {
 $(function () {
     makeEditable(
