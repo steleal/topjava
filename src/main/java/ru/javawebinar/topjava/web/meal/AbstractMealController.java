@@ -7,6 +7,7 @@ import org.springframework.lang.Nullable;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.service.MealService;
 import ru.javawebinar.topjava.to.MealTo;
+import ru.javawebinar.topjava.to.ParamMealTo;
 import ru.javawebinar.topjava.util.MealsUtil;
 import ru.javawebinar.topjava.web.SecurityUtil;
 
@@ -48,7 +49,18 @@ public abstract class AbstractMealController {
         return service.create(meal, userId);
     }
 
+    public void create(ParamMealTo mealTo) {
+        create(MealsUtil.createNewFromParamTo(mealTo));
+    }
+
     public void update(Meal meal, int id) {
+        int userId = SecurityUtil.authUserId();
+        log.info("update {} for user {}", meal, userId);
+        assureIdConsistent(meal, id);
+        service.update(meal, userId);
+    }
+
+    public void update(ParamMealTo meal, int id) {
         int userId = SecurityUtil.authUserId();
         log.info("update {} for user {}", meal, userId);
         assureIdConsistent(meal, id);
