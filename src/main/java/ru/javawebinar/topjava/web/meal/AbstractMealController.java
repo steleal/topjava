@@ -50,6 +50,7 @@ public abstract class AbstractMealController {
     }
 
     public void create(ParamMealTo mealTo) {
+        checkNew(mealTo);
         create(MealsUtil.createNewFromParamTo(mealTo));
     }
 
