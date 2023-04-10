@@ -47,8 +47,7 @@ public class MealService {
 
     public void update(ParamMealTo mealTo, int userId) {
         Assert.notNull(mealTo, "meal must not be null");
-        Meal meal = get(mealTo.getId(), userId);
-        Meal updatedMeal = MealsUtil.updateFromParamTo(meal, mealTo);
+        Meal updatedMeal = MealsUtil.createFromParamTo(mealTo);
         checkNotFoundWithId(repository.save(updatedMeal, userId), updatedMeal.id());
     }
 

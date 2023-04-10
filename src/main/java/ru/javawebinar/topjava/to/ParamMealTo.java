@@ -6,29 +6,26 @@ import org.springframework.format.annotation.DateTimeFormat;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import java.io.Serial;
-import java.io.Serializable;
+import java.beans.ConstructorProperties;
 import java.time.LocalDateTime;
 
-public class ParamMealTo extends BaseTo implements Serializable {
-    @Serial
-    private static final long serialVersionUID = 1L;
+import static ru.javawebinar.topjava.util.DateTimeUtil.DATE_TIME_FORMAT;
+
+public class ParamMealTo extends BaseTo {
 
     @NotNull
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm")
-    private LocalDateTime dateTime;
+    @DateTimeFormat(pattern = DATE_TIME_FORMAT)
+    private final LocalDateTime dateTime;
 
     @NotBlank
     @Size(min = 2, max = 120)
-    private String description;
+    private final String description;
 
     @NotNull
     @Range(min = 10, max = 5000)
-    private Integer calories;
+    private final Integer calories;
 
-    public ParamMealTo() {
-    }
-
+    @ConstructorProperties({"id", "dateTime", "description", "calories"})
     public ParamMealTo(Integer id, LocalDateTime dateTime, String description, Integer calories) {
         super(id);
         this.dateTime = dateTime;
@@ -46,18 +43,6 @@ public class ParamMealTo extends BaseTo implements Serializable {
 
     public int getCalories() {
         return calories;
-    }
-
-    public void setDateTime(LocalDateTime dateTime) {
-        this.dateTime = dateTime;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public void setCalories(Integer calories) {
-        this.calories = calories;
     }
 
     @Override
