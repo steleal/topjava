@@ -15,7 +15,7 @@ public class ParamMealTo extends BaseTo implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @NotNull
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime dateTime;
 
     @NotBlank
