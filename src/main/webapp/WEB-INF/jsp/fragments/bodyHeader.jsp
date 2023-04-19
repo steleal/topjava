@@ -26,5 +26,6 @@
                 </button>
             </form:form>
         </sec:authorize>
+        <jsp:include page="changeLocale.jsp"/>
     </div>
 </nav>
