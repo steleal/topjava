@@ -47,11 +47,12 @@ public class ExceptionInfoHandler {
         return logAndGetErrorInfo(req, e, false, VALIDATION_ERROR);
     }
 
+    // MethodArgumentNotValidException extends BindException
     @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY) // 422
     @ExceptionHandler(BindException.class)
     public ErrorInfo bindingError(HttpServletRequest req, BindException e) {
         StringBuffer requestURL = req.getRequestURL();
-        log(requestURL,false, BINDING_ERROR, e);
+        log(requestURL, false, BINDING_ERROR, e);
         String message = ValidationUtil.getErrorInfoMessage(e.getBindingResult());
         return new ErrorInfo(requestURL, BINDING_ERROR, message);
     }
