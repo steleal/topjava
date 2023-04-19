@@ -2,9 +2,12 @@ package ru.javawebinar.topjava.web.user;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.service.UserService;
 import ru.javawebinar.topjava.util.exception.ErrorInfo;
@@ -12,11 +15,14 @@ import ru.javawebinar.topjava.util.exception.ErrorType;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 import ru.javawebinar.topjava.web.AbstractControllerTest;
 
+import java.util.Locale;
+
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static ru.javawebinar.topjava.ErrorInfoTestData.ERROR_MATCHER;
 import static ru.javawebinar.topjava.ErrorInfoTestData.ERROR_WITHOUT_DETAIL_MATCHER;
 import static ru.javawebinar.topjava.TestUtil.userHttpBasic;
 import static ru.javawebinar.topjava.UserTestData.*;
@@ -27,6 +33,9 @@ class AdminRestControllerTest extends AbstractControllerTest {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private MessageSource messageSource;
 
     @Test
     void get() throws Exception {
@@ -115,6 +124,24 @@ class AdminRestControllerTest extends AbstractControllerTest {
     }
 
     @Test
+    @Transactional(propagation = Propagation.NEVER)
+    void updateWithDuplicatedEmail() throws Exception {
+        User updated = getUpdated();
+        updated.setEmail(admin.getEmail());
+        ResultActions action = perform(MockMvcRequestBuilders.put(REST_URL + USER_ID)
+                .contentType(MediaType.APPLICATION_JSON)
+                .with(userHttpBasic(admin))
+                .content(jsonWithPassword(updated, updated.getPassword())))
+                .andDo(print())
+                .andExpect(status().isConflict());
+
+        ErrorInfo response = ERROR_MATCHER.readFromJson(action);
+        String expectedMessage = messageSource.getMessage("user.error.duplicatedEmail", null, Locale.getDefault());
+        ERROR_MATCHER.assertMatch(response, new ErrorInfo("http://localhost" + REST_URL + USER_ID,
+                ErrorType.DATA_ERROR, expectedMessage));
+    }
+
+    @Test
     void createWithLocation() throws Exception {
         User newUser = getNew();
         ResultActions action = perform(MockMvcRequestBuilders.post(REST_URL)
@@ -144,6 +171,24 @@ class AdminRestControllerTest extends AbstractControllerTest {
         ErrorInfo response = ERROR_WITHOUT_DETAIL_MATCHER.readFromJson(action);
         ERROR_WITHOUT_DETAIL_MATCHER.assertMatch(response, new ErrorInfo("http://localhost" + REST_URL,
                 ErrorType.BINDING_ERROR, ""));
+    }
+
+    @Test
+    @Transactional(propagation = Propagation.NEVER)
+    void createWithLocationWithDuplicateEmail() throws Exception {
+        User newUser = getNew();
+        newUser.setEmail(user.getEmail());
+        ResultActions action = perform(MockMvcRequestBuilders.post(REST_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .with(userHttpBasic(admin))
+                .content(jsonWithPassword(newUser, newUser.getPassword())))
+                .andDo(print())
+                .andExpect(status().isConflict());
+
+        ErrorInfo response = ERROR_MATCHER.readFromJson(action);
+        String expectedMessage = messageSource.getMessage("user.error.duplicatedEmail", null, Locale.getDefault());
+        ERROR_MATCHER.assertMatch(response, new ErrorInfo("http://localhost" + REST_URL,
+                ErrorType.DATA_ERROR, expectedMessage));
     }
 
     @Test
