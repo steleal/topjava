@@ -7,13 +7,13 @@ import org.springframework.core.annotation.Order;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.validation.BindException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import ru.javawebinar.topjava.util.ValidationUtil;
-import ru.javawebinar.topjava.util.exception.BindingException;
 import ru.javawebinar.topjava.util.exception.ErrorInfo;
 import ru.javawebinar.topjava.util.exception.ErrorType;
 import ru.javawebinar.topjava.util.exception.IllegalRequestDataException;
@@ -48,9 +48,12 @@ public class ExceptionInfoHandler {
     }
 
     @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY) // 422
-    @ExceptionHandler(BindingException.class)
-    public ErrorInfo bindingError(HttpServletRequest req, BindingException e) {
-        return logAndGetErrorInfo(req, e, true, BINDING_ERROR);
+    @ExceptionHandler(BindException.class)
+    public ErrorInfo bindingError(HttpServletRequest req, BindException e) {
+        StringBuffer requestURL = req.getRequestURL();
+        log(requestURL,false, BINDING_ERROR, e);
+        String message = ValidationUtil.getErrorInfoMessage(e.getBindingResult());
+        return new ErrorInfo(requestURL, BINDING_ERROR, message);
     }
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -62,11 +65,15 @@ public class ExceptionInfoHandler {
     //    https://stackoverflow.com/questions/538870/should-private-helper-methods-be-static-if-they-can-be-static
     private static ErrorInfo logAndGetErrorInfo(HttpServletRequest req, Exception e, boolean logException, ErrorType errorType) {
         Throwable rootCause = ValidationUtil.getRootCause(e);
-        if (logException) {
-            log.error(errorType + " at request " + req.getRequestURL(), rootCause);
-        } else {
-            log.warn("{} at request  {}: {}", errorType, req.getRequestURL(), rootCause.toString());
-        }
+        log(req.getRequestURL(), logException, errorType, rootCause);
         return new ErrorInfo(req.getRequestURL(), errorType, rootCause.toString());
+    }
+
+    private static void log(CharSequence requestUrl, boolean logException, ErrorType errorType, Throwable rootCause) {
+        if (logException) {
+            log.error(errorType + " at request " + requestUrl, rootCause);
+        } else {
+            log.warn("{} at request  {}: {}", errorType, requestUrl, rootCause.toString());
+        }
     }
 }
