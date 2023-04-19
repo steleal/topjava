@@ -50,9 +50,17 @@ public class ExceptionInfoHandler {
     public ErrorInfo conflict(HttpServletRequest req, DataIntegrityViolationException e) {
         StringBuffer requestURL = req.getRequestURL();
         log(requestURL, false, DATA_ERROR, e);
-        String message = (e.getMessage()!= null && e.getMessage().contains("users_unique_email_idx"))
-                ? messageSource.getMessage("user.error.duplicatedEmail",null, Locale.getDefault())
-                : e.getMessage();
+
+        String errorMessage = e.getMessage() == null ? "" : e.getMessage();
+        String message;
+        if (errorMessage.contains("users_unique_email_idx")) {
+            message = messageSource.getMessage("user.error.duplicatedEmail", null, Locale.getDefault());
+        } else if (errorMessage.contains("meal_unique_user_datetime_idx")) {
+            message = messageSource.getMessage("meal.error.duplicatedDateTime", null, Locale.getDefault());
+        } else {
+            message = errorMessage;
+        }
+
         return new ErrorInfo(requestURL, DATA_ERROR, message);
     }
 
